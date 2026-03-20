@@ -20,6 +20,8 @@ services:
       # - /var/run/docker.sock:/var/run/docker.sock
     # group_add:
     #   - "${DOCKER_GID:-999}"
+    networks:
+      - ai-bridge
     ports:
       - "${OPENCLAW_GATEWAY_PORT:-18789}:18789"
       - "${OPENCLAW_BRIDGE_PORT:-18790}:18790"
@@ -48,6 +50,28 @@ services:
       retries: 5
       start_period: 20s
 
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    networks:
+      - ai-bridge
+    # This mounts your existing models so you don't redownload them
+    devices:
+      - /dev/dri:/dev/dri # Hardware access to integrated GPU
+    environment:
+      OLLAMA_VULKAN: 1   # Forces Ollama to use Vulkan for Intel/AMD
+      OLLAMA_HOST: 0.0.0.0
+      OLLAMA_KEEP_ALIVE: 60m # Stop model of inactivity after 60m instead of 5min
+      # This tells the internal Ollama process where to look
+      OLLAMA_MODELS: /var/lib/ollama
+      OLLAMA_FLASH_ATTENTION: 1 
+    # --------------------------
+    restart: unless-stopped
+    volumes:
+      - /var/lib/ollama:/var/lib/ollama
+    ports:
+      - "11434:11434"
+
   openclaw-cli:
     image: ${OPENCLAW_IMAGE:-openclaw:local}
     network_mode: "service:openclaw-gateway"
@@ -74,3 +98,7 @@ services:
     entrypoint: ["node", "dist/index.js"]
     depends_on:
       - openclaw-gateway
+
+networks:
+  ai-bridge:
+    driver: bridge
