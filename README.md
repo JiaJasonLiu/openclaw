@@ -30,6 +30,27 @@ OpenClaw Onboard guides you step by step through setting up the gateway, workspa
 Works with npm, pnpm, or bun.
 New install? Start here: [Getting started](https://docs.openclaw.ai/start/getting-started)
 
+## Sustain Forks
+Remote Name	Points To	Purpose
+origin	Your Fork	Where you push your feature branches.
+upstream	Original Repo	Where you fetch the latest official updates.
+
+```
+```
+# 1. Switch to your main/master branch
+git checkout main
+
+# 2. Pull the latest code from the ORIGINAL repo
+git fetch upstream
+
+# 3. Merge those changes into your local main branch
+git merge upstream/main
+
+# 4. (Optional) Update your GitHub fork so it's not "behind"
+git push origin main
+```
+```
+
 ## Sponsors
 
 | OpenAI                                                            | Vercel                                                            | Blacksmith                                                                   | Convex                                                                |
